@@ -7,7 +7,6 @@
  * - LetterMappingOutput - The return type for the mapLetters function.
  */
 
-import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const LetterMappingInputSchema = z.object({
@@ -29,81 +28,41 @@ const LetterMappingOutputSchema = z.object({
 });
 export type LetterMappingOutput = z.infer<typeof LetterMappingOutputSchema>;
 
+const CHARLESTON_MAP: { [key: string]: string } = {
+  C: '1',
+  H: '2',
+  A: '3',
+  R: '4',
+  L: '5',
+  E: '6',
+  S: '7',
+  T: '8',
+  O: '9',
+  N: '0',
+};
+
 export async function mapLetters(input: LetterMappingInput): Promise<LetterMappingOutput> {
-  return mapLettersFlow(input);
+  const { extractedText } = input;
+  // Convert to uppercase to handle mixed-case input, and trim whitespace
+  const cleanedText = extractedText.trim().toUpperCase();
+
+  if (cleanedText === '') {
+    // If the input text is empty or only whitespace after trimming
+    return { numericalCode: '', shouldMap: false };
+  }
+
+  let numericalCode = '';
+  for (const char of cleanedText) {
+    if (CHARLESTON_MAP[char]) {
+      numericalCode += CHARLESTON_MAP[char];
+    }
+  }
+
+  if (numericalCode === '') {
+    // If no characters from the input text were found in the CHARLESTON_MAP (e.g., input was "XYZ")
+    return { numericalCode: '', shouldMap: false };
+  }
+
+  // If we have a numerical code, it means mapping was successful and relevant
+  return { numericalCode, shouldMap: true };
 }
-
-const shouldMapText = ai.defineTool(
-  {
-    name: 'shouldMapText',
-    description: 'Determines whether the extracted text is suitable for mapping to the CHARLESTON letters.',
-    inputSchema: z.object({
-      extractedText: z.string().describe('The text extracted from the image.'),
-    }),
-    outputSchema: z.boolean(),
-  },
-  async (input) => {
-    // Implement logic to determine if the text is suitable for mapping
-    // This could involve checking for a minimum length, presence of certain characters, etc.
-    // For now, let's just return true if the text is not empty
-    return input.extractedText.trim().length > 0;
-  }
-);
-
-const prompt = ai.definePrompt({
-  name: 'letterMappingPrompt',
-  input: {schema: LetterMappingInputSchema},
-  output: {schema: LetterMappingOutputSchema},
-  tools: [shouldMapText],
-  prompt: `You are a helpful assistant tasked with mapping letters from extracted text to numbers based on the letters in "CHARLESTON".
-
-  The mapping is as follows:
-  C = 1
-  H = 2
-  A = 3
-  R = 4
-  L = 5
-  E = 6
-  S = 7
-  T = 8
-  O = 9
-  N = 0
-
-  Given the extracted text: "{{extractedText}}", determine if the text is suitable for mapping using the shouldMapText tool. If the tool returns true, map the letters in the extracted text to their corresponding numbers based on the "CHARLESTON" mapping. If a letter is not in "CHARLESTON", ignore it.
-
-  If the shouldMapText tool returns false, set the numericalCode to an empty string and shouldMap to false.
-
-  The final numerical code must be a string.
-
-  Example:
-  Extracted Text: "CARL"
-  Numerical Code: "1345"
-
-  Extracted Text: "HELLO"
-  Numerical Code: "26559"
-
-  Extracted Text: "XYZ"
-  Numerical Code: ""
-
-  Extracted Text: ""
-  Numerical Code: ""
-  `,
-});
-
-const mapLettersFlow = ai.defineFlow(
-  {
-    name: 'mapLettersFlow',
-    inputSchema: LetterMappingInputSchema,
-    outputSchema: LetterMappingOutputSchema,
-  },
-  async input => {
-    // Directly call the prompt which will use the tool.
-    // The prompt is designed to handle the logic of when to call the tool and what to do with its output.
-    const {output} = await prompt(input);
-    
-    // The prompt output schema includes `shouldMap`. We can rely on the prompt to set this correctly.
-    // If the tool determined no mapping should occur, or if no relevant letters are found,
-    // the prompt should return an empty numericalCode and appropriate shouldMap value.
-    return output!;
-  }
-);

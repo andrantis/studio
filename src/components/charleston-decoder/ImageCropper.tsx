@@ -77,7 +77,7 @@ interface ImageCropperProps {
 }
 
 const ASPECT_RATIO = undefined; 
-const MIN_DIMENSION = 50; 
+const MIN_DIMENSION = 20; // Reduced minimum dimension for smaller selections
 
 export default function ImageCropper({ imageSrc, originalFile, onCropComplete, onCancel }: ImageCropperProps) {
   const imgRef = useRef<HTMLImageElement>(null);
@@ -89,7 +89,7 @@ export default function ImageCropper({ imageSrc, originalFile, onCropComplete, o
   useEffect(() => {
     if (isImageLoaded && imgRef.current) {
       const { width, height } = imgRef.current;
-      const cropConfig = { unit: '%', width: 50 } as Crop; // Initial 50% width crop
+      const cropConfig = { unit: '%', width: 25 } as Crop; // Reduced initial crop width to 25%
       const newCrop = centerCrop(
         makeAspectCrop(
           cropConfig,
@@ -110,7 +110,7 @@ export default function ImageCropper({ imageSrc, originalFile, onCropComplete, o
   function onImageLoadInternal(e: React.SyntheticEvent<HTMLImageElement>) {
     setIsImageLoaded(true);
     const { width, height } = e.currentTarget;
-    const cropConfig = { unit: '%', width: 50 } as Crop; // Initial 50% width crop
+    const cropConfig = { unit: '%', width: 25 } as Crop; // Reduced initial crop width to 25%
      const newCrop = centerCrop(
         makeAspectCrop(
           cropConfig,
@@ -197,3 +197,4 @@ export default function ImageCropper({ imageSrc, originalFile, onCropComplete, o
     </Card>
   );
 }
+

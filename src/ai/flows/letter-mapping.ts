@@ -58,16 +58,16 @@ const prompt = ai.definePrompt({
   prompt: `You are a helpful assistant tasked with mapping letters from extracted text to numbers based on the letters in "CHARLESTON".
 
   The mapping is as follows:
-  C = 0
-  H = 1
-  A = 2
-  R = 3
-  L = 4
-  E = 5
-  S = 6
-  T = 7
-  O = 8
-  N = 9
+  C = 1
+  H = 2
+  A = 3
+  R = 4
+  L = 5
+  E = 6
+  S = 7
+  T = 8
+  O = 9
+  N = 0
 
   Given the extracted text: "{{extractedText}}", determine if the text is suitable for mapping using the shouldMapText tool. If the tool returns true, map the letters in the extracted text to their corresponding numbers based on the "CHARLESTON" mapping. If a letter is not in "CHARLESTON", ignore it.
 
@@ -77,10 +77,10 @@ const prompt = ai.definePrompt({
 
   Example:
   Extracted Text: "CARL"
-  Numerical Code: "0234"
+  Numerical Code: "1345"
 
   Extracted Text: "HELLO"
-  Numerical Code: "15448"
+  Numerical Code: "26559"
 
   Extracted Text: "XYZ"
   Numerical Code: ""

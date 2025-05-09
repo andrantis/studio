@@ -79,7 +79,7 @@ export default function ResultsView({
           <ResultItem icon={Binary} title="Numerical Code" value={displayNumericalCode} />
           {originalPrice !== null && (
             <>
-              <ResultItem icon={DollarSign} title="Original Price" value={originalPrice} unit="USD" />
+              <ResultItem icon={DollarSign} title="Cost Price" value={originalPrice} unit="USD" />
               <ResultItem icon={Percent} title="Price with 10% Increase" value={calculatedPrice} unit="USD" highlight={true} />
             </>
           )}

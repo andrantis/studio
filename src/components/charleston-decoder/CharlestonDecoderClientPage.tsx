@@ -2,7 +2,7 @@
 "use client";
 
 import type React from 'react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { extractText, type ExtractTextInput } from '@/ai/flows/ocr-text-extraction';
 import { mapLetters, type LetterMappingInput } from '@/ai/flows/letter-mapping';
 import ImageUploadForm from './ImageUploadForm';

@@ -33,20 +33,22 @@ export async function mapLetters(input: LetterMappingInput): Promise<LetterMappi
   return mapLettersFlow(input);
 }
 
-const shouldMapText = ai.defineTool({
-  name: 'shouldMapText',
-  description: 'Determines whether the extracted text is suitable for mapping to the CHARLESTON letters.',
-  inputSchema: z.object({
-    extractedText: z.string().describe('The text extracted from the image.'),
-  }),
-  outputSchema: z.boolean(),
+const shouldMapText = ai.defineTool(
+  {
+    name: 'shouldMapText',
+    description: 'Determines whether the extracted text is suitable for mapping to the CHARLESTON letters.',
+    inputSchema: z.object({
+      extractedText: z.string().describe('The text extracted from the image.'),
+    }),
+    outputSchema: z.boolean(),
+  },
   async (input) => {
     // Implement logic to determine if the text is suitable for mapping
     // This could involve checking for a minimum length, presence of certain characters, etc.
     // For now, let's just return true if the text is not empty
-    return input.extractedText.length > 0;
-  },
-});
+    return input.extractedText.trim().length > 0;
+  }
+);
 
 const prompt = ai.definePrompt({
   name: 'letterMappingPrompt',
@@ -95,16 +97,13 @@ const mapLettersFlow = ai.defineFlow(
     outputSchema: LetterMappingOutputSchema,
   },
   async input => {
-    const shouldMap = await shouldMapText(input);
-
-    if (!shouldMap) {
-      return {
-        numericalCode: '',
-        shouldMap: false,
-      };
-    }
-
+    // Directly call the prompt which will use the tool.
+    // The prompt is designed to handle the logic of when to call the tool and what to do with its output.
     const {output} = await prompt(input);
+    
+    // The prompt output schema includes `shouldMap`. We can rely on the prompt to set this correctly.
+    // If the tool determined no mapping should occur, or if no relevant letters are found,
+    // the prompt should return an empty numericalCode and appropriate shouldMap value.
     return output!;
   }
 );

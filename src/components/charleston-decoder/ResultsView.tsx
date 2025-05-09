@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,16 +16,16 @@ interface ResultsViewProps {
 }
 
 const ResultItem: React.FC<{ icon: React.ElementType, title: string, value: string | number | null | undefined, unit?: string, highlight?: boolean }> = ({ icon: Icon, title, value, unit, highlight }) => (
-  <div className={`flex items-start space-x-3 p-3 rounded-md ${highlight ? 'bg-accent/10' : 'bg-secondary/50'}`}>
-    <Icon className={`w-6 h-6 mt-1 ${highlight ? 'text-accent' : 'text-primary'}`} />
+  <div className={`flex items-start space-x-3 p-3 rounded-md ${highlight ? 'bg-accent text-accent-foreground shadow-lg' : 'bg-secondary/50'}`}>
+    <Icon className={`w-6 h-6 mt-1 ${highlight ? 'text-accent-foreground' : 'text-primary'}`} />
     <div>
-      <p className="text-sm font-medium text-muted-foreground">{title}</p>
+      <p className={`text-sm font-medium ${highlight ? 'text-accent-foreground/80' : 'text-muted-foreground'}`}>{title}</p>
       {value !== null && value !== undefined ? (
         <p className={`text-lg font-semibold ${highlight ? 'text-accent-foreground' : 'text-foreground'}`}>
           {typeof value === 'number' ? value.toFixed(2) : value} {unit}
         </p>
       ) : (
-        <p className="text-lg italic text-muted-foreground">Not available</p>
+        <p className={`text-lg italic ${highlight ? 'text-accent-foreground/70' : 'text-muted-foreground'}`}>Not available</p>
       )}
     </div>
   </div>
@@ -87,3 +88,4 @@ export default function ResultsView({
     </div>
   );
 }
+
